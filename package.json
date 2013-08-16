@@ -1,0 +1,33 @@
+{
+  "name": "dbjs-file",
+  "version": "0.1.0",
+  "description": "Custom handlers for DBJS File types",
+  "author": "Mariusz Nowak <medyk@medikoo.com> (http://www.medikoo.com/)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/medikoo/dbjs-file.git"
+  },
+  "bugs": {
+    "url": "https://github.com/medikoo/dbjs-file/issues"
+  },
+  "keywords": [
+    "dbjs",
+    "database",
+    "file",
+    "fs",
+    "upload",
+    "formidable"
+  ],
+  "dependencies": {
+    "dbjs": "git://github.com/medikoo/dbjs.git",
+    "deferred": "~0.6.5",
+    "es5-ext": "~0.9.2",
+    "fs2": "git://github.com/medikoo/fs2.git",
+    "time-uuid": "git://github.com/medikoo/time-uuid.git"
+  },
+  "license": "MIT"
+}
