@@ -2,11 +2,17 @@
 
 var callable  = require('es5-ext/lib/Object/valid-callable')
   , isId      = require('time-uuid/lib/is-id')
+  , Db        = require('dbjs')
   , getObject = require('dbjs/lib/objects')._get
   , rename    = require('fs2/lib/rename')
   , resolve   = require('path').resolve
 
-  , defNameResolve = function (db, file) { return db._id_ + '.' + file.name; };
+  , defNameResolve = function (db, file) { return db._id_ + '.' + file.name; }
+  , fireOnUpload;
+
+fireOnUpload = function () {
+	if (this.onUpload) this.onUpload();
+};
 
 module.exports = function (File, uploadPath/*, nameResolve*/) {
 	var nameResolve = arguments[2];
@@ -27,7 +33,8 @@ module.exports = function (File, uploadPath/*, nameResolve*/) {
 		rename(data.file.path, path)(function () {
 			dbFile.dir = path;
 			dbFile.size = data.file.size;
-			if (dbFile.onUpload) return dbFile.onUpload();
+			if (dbFile.ns === Db) dbFile.once('selfupdate', fireOnUpload);
+			else if (dbFile.onUpload) return dbFile.onUpload();
 		}).done(function () {
 			res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
 			res.end('OK');
