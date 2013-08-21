@@ -31,7 +31,7 @@ module.exports = function (File, uploadPath/*, nameResolve*/) {
 		dbFile = getObject(data.id);
 		path = resolve(uploadPath, nameResolve(dbFile, data.file));
 		rename(data.file.path, path)(function () {
-			dbFile.dir = path;
+			dbFile.path = path;
 			dbFile.size = data.file.size;
 			if (dbFile.ns === Db) dbFile.once('selfupdate', fireOnUpload);
 			else if (dbFile.onUpload) return dbFile.onUpload();
