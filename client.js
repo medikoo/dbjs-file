@@ -1,6 +1,6 @@
 'use strict';
 
-var isError = require('es5-ext/lib/Error/is-error')
+var isError = require('es5-ext/error/is-error')
   , file    = require('dbjs/lib/objects')._get('File').prototype;
 
 module.exports = function (FormData, XMLHttpRequest, File, url) {
