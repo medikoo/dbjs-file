@@ -1,16 +1,30 @@
 'use strict';
 
-var isError = require('es5-ext/error/is-error')
-  , file    = require('dbjs/lib/objects')._get('File').prototype;
+var d       = require('d/d')
+  , isError = require('es5-ext/error/is-error')
 
-module.exports = function (FormData, XMLHttpRequest, File, url) {
-	file._$construct.$$setValue(function (file) {
+  , defineProperty = Object.defineProperty;
+
+module.exports = function (db, FormData, XMLHttpRequest, File, url) {
+
+	defineProperty(db.File, 'validate', d(function (file) {
+		if (file.constructor !== File) {
+			return new TypeError(file + " is not a File instance");
+		}
+		this._validateCreate_({
+			type: file.type,
+			name: file.name
+		});
+		return file;
+	}));
+
+	defineProperty(db.File.prototype, '_initialize_', d(function (file) {
 		var fd, xhr, onError;
 
 		fd = new FormData();
 		xhr = new XMLHttpRequest();
 		fd.append('file', file);
-		fd.append('id', this._id_);
+		fd.append('id', this.__id__);
 
 		onError = function (e) {
 			this.emit('error', e);
@@ -33,14 +47,5 @@ module.exports = function (FormData, XMLHttpRequest, File, url) {
 
 		this.name = file.name;
 		this.type = file.type;
-	});
-	file._validateConstruction.$$setValue(function (file) {
-		if (file.constructor !== File) {
-			return new TypeError(file + " is not a File instance");
-		}
-		return this.validateCreateProperties({
-			type: file.type,
-			name: file.name
-		});
-	});
+	}));
 };

@@ -2,10 +2,9 @@
 
 var callable  = require('es5-ext/object/valid-callable')
   , isId      = require('time-uuid/lib/is-id')
-  , Db        = require('dbjs')
-  , getObject = require('dbjs/lib/objects')._get
   , rename    = require('fs2/lib/rename')
   , resolve   = require('path').resolve
+  , validDb   = require('dbjs/valid-dbjs')
 
   , defNameResolve = function (db, file) { return db._id_ + '.' + file.name; }
   , fireOnUpload;
@@ -14,8 +13,8 @@ fireOnUpload = function () {
 	if (this.onUpload) this.onUpload();
 };
 
-module.exports = function (File, uploadPath/*, nameResolve*/) {
-	var nameResolve = arguments[2];
+module.exports = function (db, File, uploadPath/*, nameResolve*/) {
+	var nameResolve = arguments[3], unserialize = validDb(db).objects.unserialize;
 
 	uploadPath = resolve(String(uploadPath));
 	nameResolve = (nameResolve != null) ? callable(nameResolve) : defNameResolve;
@@ -28,12 +27,12 @@ module.exports = function (File, uploadPath/*, nameResolve*/) {
 			return;
 		}
 
-		dbFile = getObject(data.id);
+		dbFile = unserialize(data.id);
 		path = resolve(uploadPath, nameResolve(dbFile, data.file));
 		rename(data.file.path, path)(function () {
 			dbFile.path = path;
 			dbFile.size = data.file.size;
-			if (dbFile.ns === Db) dbFile.once('selfupdate', fireOnUpload);
+			if (dbFile.Type === db.Object) dbFile.once('turn', fireOnUpload);
 			else if (dbFile.onUpload) return dbFile.onUpload();
 		}).done(function () {
 			res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });

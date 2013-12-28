@@ -3,17 +3,6 @@
   "version": "0.1.0",
   "description": "Custom handlers for DBJS File types",
   "author": "Mariusz Nowak <medyk@medikoo.com> (http://www.medikoo.com/)",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/medikoo/dbjs-file.git"
-  },
-  "bugs": {
-    "url": "https://github.com/medikoo/dbjs-file/issues"
-  },
   "keywords": [
     "dbjs",
     "database",
@@ -22,6 +11,10 @@
     "upload",
     "formidable"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/medikoo/dbjs-file.git"
+  },
   "dependencies": {
     "dbjs": "git://github.com/medikoo/dbjs.git",
     "es5-ext": "git://github.com/medikoo/es5-ext.git",
