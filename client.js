@@ -28,7 +28,7 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 
 		onError = function (e) {
 			this.emit('error', e);
-			this.delete();
+			this.database.objects.delete(this);
 		}.bind(this);
 
 		xhr.open('POST', url, true);
