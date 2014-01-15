@@ -6,16 +6,17 @@ var d       = require('d/d')
   , defineProperty = Object.defineProperty;
 
 module.exports = function (db, FormData, XMLHttpRequest, File, url) {
+	var validateCreate = db.File._validateCreate_;
 
-	defineProperty(db.File, 'validate', d(function (file) {
+	defineProperty(db.File, '_validateCreate_', d(function (file) {
 		if (file.constructor !== File) {
 			return new TypeError(file + " is not a File instance");
 		}
-		this._validateCreate_({
+		validateCreate.call(this, {
 			type: file.type,
 			name: file.name
 		});
-		return file;
+		return [file];
 	}));
 
 	defineProperty(db.File.prototype, '_initialize_', d(function (file) {
