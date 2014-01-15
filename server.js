@@ -36,7 +36,7 @@ module.exports = function (db, File, uploadPath/*, nameResolve*/) {
 		rename(data.file.path, path)(function () {
 			dbFile.path = path;
 			dbFile.diskSize = data.file.size;
-			if (dbFile.Type === db.Object) dbFile.once('turn', fireOnUpload);
+			if (dbFile.constructor === db.Object) dbFile.once('turn', fireOnUpload);
 			else if (dbFile.onUpload) return dbFile.onUpload();
 		}).done(function () {
 			res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
