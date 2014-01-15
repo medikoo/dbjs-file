@@ -22,6 +22,10 @@ module.exports = function (db, File, uploadPath/*, nameResolve*/) {
 	return function (data, res) {
 		var path, dbFile;
 		if (!isId(data.id) || !(data.file instanceof File)) {
+			if (!isId(data.id)) console.error("Upload error: Invalid id " + data.id);
+			if (!(data.file instanceof File)) {
+				console.error("Upload error: Unexpected file type");
+			}
 			res.statusCode = 400;
 			res.end("Invalid data");
 			return;
