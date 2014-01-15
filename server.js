@@ -6,11 +6,12 @@ var callable  = require('es5-ext/object/valid-callable')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
 
+  , nextTick = process.nextTick
   , defNameResolve = function (db, file) { return db.__id__ + '.' + file.name; }
   , fireOnUpload;
 
 fireOnUpload = function () {
-	if (this.onUpload) this.onUpload();
+	if (this.onUpload) nextTick(this.onUpload.bind(this));
 };
 
 module.exports = function (db, File, uploadPath/*, nameResolve*/) {
@@ -37,7 +38,7 @@ module.exports = function (db, File, uploadPath/*, nameResolve*/) {
 			dbFile.path = path;
 			dbFile.diskSize = data.file.size;
 			if (dbFile.constructor === db.Object) dbFile.once('turn', fireOnUpload);
-			else if (dbFile.onUpload) return dbFile.onUpload();
+			else if (dbFile.onUpload) return nextTick(dbFile.onUpload.bind(dbFile));
 		}).done(function () {
 			res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
 			res.end('OK');
