@@ -6,7 +6,7 @@ var callable  = require('es5-ext/object/valid-callable')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
 
-  , defNameResolve = function (db, file) { return db._id_ + '.' + file.name; }
+  , defNameResolve = function (db, file) { return db.__id__ + '.' + file.name; }
   , fireOnUpload;
 
 fireOnUpload = function () {
