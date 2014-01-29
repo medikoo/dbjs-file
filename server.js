@@ -14,7 +14,7 @@ fireOnUpload = function () {
 	if (this.onUpload) nextTick(this.onUpload.bind(this));
 };
 
-module.exports = function (db, File, uploadPath/*, nameResolve*/) {
+module.exports = function (db, uploadPath/*, nameResolve*/) {
 	var nameResolve = arguments[3], unserialize = validDb(db).objects.unserialize;
 
 	uploadPath = resolve(String(uploadPath));
@@ -22,11 +22,9 @@ module.exports = function (db, File, uploadPath/*, nameResolve*/) {
 
 	return function (data, res) {
 		var path, dbFile;
-		if (!isId(data.id) || !(data.file instanceof File)) {
+		if (!isId(data.id) || !data.file) {
 			if (!isId(data.id)) console.error("Upload error: Invalid id " + data.id);
-			if (!(data.file instanceof File)) {
-				console.error("Upload error: Unexpected file type");
-			}
+			if (!data.file) console.error("Upload error: Missing file");
 			res.statusCode = 400;
 			res.end("Invalid data");
 			return;
