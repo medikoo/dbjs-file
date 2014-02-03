@@ -1,7 +1,6 @@
 'use strict';
 
 var callable  = require('es5-ext/object/valid-callable')
-  , isId      = require('time-uuid/lib/is-id')
   , rename    = require('fs2/lib/rename')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
@@ -22,8 +21,8 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 
 	return function (data, res) {
 		var path, dbFile;
-		if (!isId(data.id) || !data.file) {
-			if (!isId(data.id)) console.error("Upload error: Invalid id " + data.id);
+		if (!data.id || !data.file) {
+			if (!data.id) console.error("Upload error: No id");
 			if (!data.file) console.error("Upload error: Missing file");
 			res.statusCode = 400;
 			res.end("Invalid data");
