@@ -1,6 +1,6 @@
 'use strict';
 
-var d       = require('d/d')
+var d       = require('d')
   , isError = require('es5-ext/error/is-error')
 
   , defineProperty = Object.defineProperty;
