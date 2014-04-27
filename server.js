@@ -2,7 +2,7 @@
 
 var callable  = require('es5-ext/object/valid-callable')
   , replace   = require('es5-ext/string/#/plain-replace-all')
-  , rename    = require('fs2/lib/rename')
+  , rename    = require('fs2/rename')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
 
