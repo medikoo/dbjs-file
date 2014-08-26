@@ -12,10 +12,7 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 		if (file.constructor !== File) {
 			return new TypeError(file + " is not a File instance");
 		}
-		validateCreate.call(this, {
-			type: file.type,
-			name: file.name
-		});
+		validateCreate.call(this);
 		return [file];
 	}));
 

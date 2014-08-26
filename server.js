@@ -40,6 +40,8 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		path = resolve(uploadPath, nameResolve(dbFile, data.file));
 		rename(data.file.path, path)(function () {
 			dbFile.path = path;
+			dbFile.name = data.file.name;
+			dbFile.type = data.file.type;
 			dbFile.diskSize = data.file.size;
 			if (dbFile.constructor === db.Object) dbFile.once('turn', fireOnUpload);
 			else if (dbFile.onUpload) return nextTick(dbFile.onUpload.bind(dbFile));
