@@ -6,14 +6,13 @@ var callable  = require('es5-ext/object/valid-callable')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
 
-  , nextTick = process.nextTick
-  , defNameResolve, fireOnUpload;
+  , nextTick = process.nextTick;
 
-defNameResolve = function (dbFile, file) {
+var defNameResolve = function (dbFile, file) {
 	return replace.call(dbFile.__id__, '/', '-') + '.' + file.name;
 };
 
-fireOnUpload = function () {
+var fireOnUpload = function () {
 	if (this.onUpload) nextTick(this.onUpload.bind(this));
 };
 
