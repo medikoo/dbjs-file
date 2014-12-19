@@ -12,8 +12,13 @@ var defNameResolve = function (dbFile, file) {
 	return replace.call(dbFile.__id__, '/', '-') + '.' + file.name;
 };
 
-var fireOnUpload = function () {
-	if (this.onUpload) nextTick(this.onUpload.bind(this));
+var invokeOnUpload = function () {
+	var result = this.onUpload();
+	if (result.done) result.done();
+};
+
+var scheduleOnUpload = function () {
+	if (this.onUpload) nextTick(invokeOnUpload.bind(this));
 };
 
 module.exports = function (db, uploadPath/*, nameResolve*/) {
@@ -42,8 +47,8 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 			if (dbFile.name !== data.file.name) dbFile.name = data.file.name;
 			if (dbFile.type !== data.file.type) dbFile.type = data.file.type;
 			dbFile.diskSize = data.file.size;
-			if (dbFile.constructor === db.Object) dbFile.once('turn', fireOnUpload);
-			else if (dbFile.onUpload) return nextTick(dbFile.onUpload.bind(dbFile));
+			if (dbFile.constructor === db.Object) dbFile.once('turn', scheduleOnUpload.bind(dbFile));
+			else scheduleOnUpload.call(dbFile);
 		}).done(function () {
 			res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
 			res.end('OK');
