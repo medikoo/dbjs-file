@@ -38,9 +38,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		}
 
 		dbFile = unserialize(data.id);
-		if (dbFile._kind_ === 'descriptor') {
-			dbFile = dbFile.object._get_(dbFile._sKey_);
-		}
+		if (dbFile._kind_ === 'descriptor') dbFile = dbFile.object._get_(dbFile._sKey_);
 		path = resolve(uploadPath, nameResolve(dbFile, data.file));
 		rename(data.file.path, path)(function () {
 			dbFile.path = path;
