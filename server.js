@@ -28,7 +28,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 	nameResolve = (nameResolve != null) ? callable(nameResolve) : defNameResolve;
 
 	return function (data, res) {
-		var path, dbFile;
+		var path, dbFile, filename;
 		if (!data.id || !data.file) {
 			if (!data.id) console.error("Upload error: No id");
 			if (!data.file) console.error("Upload error: Missing file");
@@ -39,9 +39,10 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 
 		dbFile = unserialize(data.id);
 		if (dbFile._kind_ === 'descriptor') dbFile = dbFile.object._get_(dbFile._sKey_);
-		path = resolve(uploadPath, nameResolve(dbFile, data.file));
+		filename = nameResolve(dbFile, data.file);
+		path = resolve(uploadPath, filename);
 		rename(data.file.path, path)(function () {
-			dbFile.path = path;
+			dbFile.path = filename;
 			if (dbFile.name !== data.file.name) dbFile.name = data.file.name;
 			if (dbFile.type !== data.file.type) dbFile.type = data.file.type;
 			dbFile.diskSize = data.file.size;
