@@ -1,6 +1,7 @@
 'use strict';
 
 var callable  = require('es5-ext/object/valid-callable')
+  , normalize = require('es5-ext/string/#/normalize')
   , replace   = require('es5-ext/string/#/plain-replace-all')
   , rename    = require('fs2/rename')
   , resolve   = require('path').resolve
@@ -9,7 +10,7 @@ var callable  = require('es5-ext/object/valid-callable')
   , nextTick = process.nextTick;
 
 var defNameResolve = function (dbFile, file) {
-	return replace.call(dbFile.__id__, '/', '-') + '.' + file.name;
+	return replace.call(dbFile.__id__, '/', '-') + '.' + normalize.call(file.name);
 };
 
 var invokeOnUpload = function () {
@@ -43,7 +44,9 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		path = resolve(uploadPath, filename);
 		rename(data.file.path, path)(function () {
 			dbFile.path = filename;
-			if (dbFile.name !== data.file.name) dbFile.name = data.file.name;
+			if ((dbFile.name !== data.file.name) || (normalize.call(dbFile.name) !== dbFile.name)) {
+				dbFile.name = normalize.call(data.file.name);
+			}
 			if (dbFile.type !== data.file.type) dbFile.type = data.file.type;
 			dbFile.diskSize = data.file.size;
 			if (dbFile.constructor === db.Object) dbFile.once('turn', scheduleOnUpload.bind(dbFile));
