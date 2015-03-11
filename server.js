@@ -15,7 +15,7 @@ var defNameResolve = function (dbFile, file) {
 
 var invokeOnUpload = function () {
 	var result = this.onUpload();
-	if (result.done) result.done();
+	if (result && (typeof result.done === 'function')) result.done();
 };
 
 var scheduleOnUpload = function () {
