@@ -3,10 +3,12 @@
 var callable  = require('es5-ext/object/valid-callable')
   , normalize = require('es5-ext/string/#/normalize')
   , replace   = require('es5-ext/string/#/plain-replace-all')
+  , d         = require('d')
   , rename    = require('fs2/rename')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
 
+  , defineProperties = Object.defineProperties, defineProperty = Object.defineProperty
   , nextTick = process.nextTick;
 
 var defNameResolve = function (dbFile, file) {
@@ -23,10 +25,39 @@ var scheduleOnUpload = function () {
 };
 
 module.exports = function (db, uploadPath/*, nameResolve*/) {
-	var nameResolve = arguments[3], unserialize = validDb(db).objects.unserialize;
+	var nameResolve = arguments[3], unserialize = validDb(db).objects.unserialize
+	  , validateCreate = db.File._validateCreate_;
 
 	uploadPath = resolve(String(uploadPath));
 	nameResolve = (nameResolve != null) ? callable(nameResolve) : defNameResolve;
+
+	defineProperties(db.File, {
+		uploadsInProgress: d([]),
+		_validateCreate_: d(function (file) {
+			if (!file) return [file];
+			if (file.ws && file.headers && file.path) {
+				validateCreate.call(this);
+				return [file];
+			}
+			throw new TypeError(file + " does not come from multiparty");
+		})
+	});
+
+	defineProperty(db.File.prototype, '_initialize_', d(function (file) {
+		var filename, path;
+
+		if (!file) return;
+		this.name = normalize.call(file.name);
+		this.type = file.type;
+
+		filename = nameResolve(this, file);
+		path = resolve(uploadPath, filename);
+		db.File.uploadsInProgress.push(rename(file.path, path)(function () {
+			this.path = filename;
+			this.diskSize = file.size;
+			return this.onUpload();
+		}.bind(this)));
+	}));
 
 	return function (data, res) {
 		var path, dbFile, filename;
