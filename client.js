@@ -9,9 +9,7 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 	var validateCreate = db.File._validateCreate_;
 
 	defineProperty(db.File, '_validateCreate_', d(function (file) {
-		if (file.constructor !== File) {
-			return new TypeError(file + " is not a File instance");
-		}
+		if (file.constructor !== File) return new TypeError(file + " is not a File instance");
 		validateCreate.call(this);
 		return [file];
 	}));
@@ -31,11 +29,8 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 
 		xhr.open('POST', url, true);
 		xhr.onload = function (data) {
-			if (isError(data)) {
-				onError(data);
-			} else if ((xhr.status < 200) || (xhr.status >= 300)) {
-				onError(new Error(xhr.responseText));
-			}
+			if (isError(data)) onError(data);
+			else if ((xhr.status < 200) || (xhr.status >= 300)) onError(new Error(xhr.responseText));
 		};
 		xhr.onerror = function () { onError(new Error("Error occured")); };
 		xhr.onabort = function () { onError(new Error("Operation aborted")); };
