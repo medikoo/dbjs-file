@@ -7,6 +7,7 @@ var callable  = require('es5-ext/object/valid-callable')
   , rename    = require('fs2/rename')
   , resolve   = require('path').resolve
   , validDb   = require('dbjs/valid-dbjs')
+  , typeMap   = require('./lib/type-map')
 
   , defineProperties = Object.defineProperties, defineProperty = Object.defineProperty
   , nextTick = process.nextTick;
@@ -53,7 +54,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 
 		if (!file) return;
 		this.name = normalize.call(file.name);
-		this.type = file.type;
+		this.type = typeMap[file.type] || file.type;
 
 		filename = nameResolve(this, file);
 		path = resolve(uploadPath, filename);

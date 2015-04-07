@@ -2,6 +2,7 @@
 
 var d       = require('d')
   , isError = require('es5-ext/error/is-error')
+  , typeMap = require('./lib/type-map')
 
   , defineProperty = Object.defineProperty;
 
@@ -39,6 +40,6 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 		xhr.send(fd);
 
 		this.name = file.name;
-		this.type = file.type;
+		this.type = typeMap[file.type] || file.type;
 	}));
 };
