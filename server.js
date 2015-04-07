@@ -15,9 +15,14 @@ var defNameResolve = function (dbFile, file) {
 	return replace.call(dbFile.__id__, '/', '-') + '.' + normalize.call(file.name);
 };
 
+var handleError = function (err) {
+	if (err.code !== 'UNSUPPORTED_FILE_TYPE') throw err;
+	console.error(err.message);
+};
+
 var invokeOnUpload = function () {
 	var result = this.onUpload();
-	if (result && (typeof result.done === 'function')) result.done();
+	if (result && (typeof result.done === 'function')) result.done(null, handleError);
 };
 
 var scheduleOnUpload = function () {
