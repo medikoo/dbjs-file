@@ -41,8 +41,10 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		uploadsInProgress: d([]),
 		_validateCreate_: d(function (file) {
 			if (!file) return [file];
-			if (file.ws && file.headers && file.path) {
+			if (file.ws && file.headers && file.path && file.name) {
 				validateCreate.call(this);
+				this.prototype._validateSet_('name', file.name);
+				this.prototype._validateSet_('path', file.path);
 				return [file];
 			}
 			throw new TypeError(file + " does not come from multiparty");
