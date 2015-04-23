@@ -13,7 +13,8 @@ var callable  = require('es5-ext/object/valid-callable')
   , nextTick = process.nextTick;
 
 var defNameResolve = function (dbFile, file) {
-	return replace.call(dbFile.__id__, '/', '-') + '.' + normalize.call(file.name);
+	return replace.call(dbFile.__id__, '/', '-') + '.' +
+		normalize.call(dbFile.database.Filename.adapt(file.name));
 };
 
 var handleError = function (err) {
@@ -43,8 +44,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 			if (!file) return [file];
 			if (file.ws && file.headers && file.path && file.name) {
 				validateCreate.call(this);
-				this.prototype._validateSet_('name', file.name);
-				this.prototype._validateSet_('path', file.path);
+				if (!file.name) this.prototype._validateSet_('name', file.name);
 				return [file];
 			}
 			throw new TypeError(file + " does not come from multiparty");
@@ -55,7 +55,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		var filename, path;
 
 		if (!file) return;
-		this.name = normalize.call(file.name);
+		this.name = normalize.call(db.Filename.adapt(file.name));
 		this.type = typeMap[file.type] || file.type;
 
 		filename = nameResolve(this, file);
@@ -84,7 +84,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		rename(data.file.path, path)(function () {
 			dbFile.path = filename;
 			if ((dbFile.name !== data.file.name) || (normalize.call(dbFile.name) !== dbFile.name)) {
-				dbFile.name = normalize.call(data.file.name);
+				dbFile.name = normalize.call(db.Filename.adapt(data.file.name));
 			}
 			if (dbFile.type !== data.file.type) dbFile.type = data.file.type;
 			dbFile.diskSize = data.file.size;

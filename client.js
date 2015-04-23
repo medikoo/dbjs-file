@@ -12,7 +12,7 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 	defineProperty(db.File, '_validateCreate_', d(function (file) {
 		if (file.constructor !== File) return new TypeError(file + " is not a File instance");
 		validateCreate.call(this);
-		this.prototype._validateSet_('name', file.name);
+		if (!file.name) this.prototype._validateSet_('name', file.name);
 		return [file];
 	}));
 
@@ -40,7 +40,7 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 		xhr.upload.onprogress = this.emit.bind(this, 'upload-progress');
 		xhr.send(fd);
 
-		this.name = file.name;
+		this.name = db.Filename.adapt(file.name);
 		this.type = typeMap[file.type] || file.type;
 	}));
 };
