@@ -1,13 +1,14 @@
 'use strict';
 
-var callable  = require('es5-ext/object/valid-callable')
-  , normalize = require('es5-ext/string/#/normalize')
-  , replace   = require('es5-ext/string/#/plain-replace-all')
-  , d         = require('d')
-  , rename    = require('fs2/rename')
-  , resolve   = require('path').resolve
-  , validDb   = require('dbjs/valid-dbjs')
-  , typeMap   = require('./lib/type-map')
+var customError = require('es5-ext/error/custom')
+  , callable    = require('es5-ext/object/valid-callable')
+  , normalize   = require('es5-ext/string/#/normalize')
+  , replace     = require('es5-ext/string/#/plain-replace-all')
+  , d           = require('d')
+  , rename      = require('fs2/rename')
+  , resolve     = require('path').resolve
+  , validDb     = require('dbjs/valid-dbjs')
+  , typeMap     = require('./lib/type-map')
 
   , defineProperties = Object.defineProperties, defineProperty = Object.defineProperty
   , nextTick = process.nextTick;
@@ -45,6 +46,9 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 			if (file.ws && file.headers && file.path && file.name) {
 				validateCreate.call(this);
 				if (!file.name) this.prototype._validateSet_('name', file.name);
+				if (!db.File.accept.has(file.type)) {
+					throw customError("Unsupported file type", 'UNSUPPORTED_FILE_TYPE');
+				}
 				return [file];
 			}
 			throw new TypeError(file + " does not come from multiparty");

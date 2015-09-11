@@ -1,8 +1,9 @@
 'use strict';
 
-var d       = require('d')
-  , isError = require('es5-ext/error/is-error')
-  , typeMap = require('./lib/type-map')
+var d           = require('d')
+  , isError     = require('es5-ext/error/is-error')
+  , customError = require('es5-ext/error/custom')
+  , typeMap     = require('./lib/type-map')
 
   , defineProperty = Object.defineProperty;
 
@@ -13,6 +14,9 @@ module.exports = function (db, FormData, XMLHttpRequest, File, url) {
 		if (file.constructor !== File) return new TypeError(file + " is not a File instance");
 		validateCreate.call(this);
 		if (!file.name) this.prototype._validateSet_('name', file.name);
+		if (!db.File.accept.has(file.type)) {
+			throw customError("Unsupported file type", 'UNSUPPORTED_FILE_TYPE');
+		}
 		return [file];
 	}));
 
