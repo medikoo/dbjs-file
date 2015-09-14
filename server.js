@@ -33,7 +33,7 @@ var scheduleOnUpload = function () {
 };
 
 module.exports = function (db, uploadPath/*, nameResolve*/) {
-	var nameResolve = arguments[3], unserialize = validDb(db).objects.unserialize
+	var nameResolve = arguments[2], unserialize = validDb(db).objects.unserialize
 	  , validateCreate = db.File._validateCreate_;
 
 	uploadPath = resolve(String(uploadPath));
