@@ -1,23 +1,18 @@
 'use strict';
 
-var customError = require('es5-ext/error/custom')
-  , callable    = require('es5-ext/object/valid-callable')
-  , normalize   = require('es5-ext/string/#/normalize')
-  , replace     = require('es5-ext/string/#/plain-replace-all')
-  , d           = require('d')
-  , rename      = require('fs2/rename')
-  , resolve     = require('path').resolve
-  , validDb     = require('dbjs/valid-dbjs')
-  , typeMap     = require('./lib/type-map')
+var customError    = require('es5-ext/error/custom')
+  , callable       = require('es5-ext/object/valid-callable')
+  , normalize      = require('es5-ext/string/#/normalize')
+  , d              = require('d')
+  , rename         = require('fs2/rename')
+  , resolve        = require('path').resolve
+  , validDb        = require('dbjs/valid-dbjs')
+  , typeMap        = require('./lib/type-map')
+  , defNameResolve = require('./lib/resolve-file-name')
 
   , renameOpts = { intermediate: true }
   , defineProperties = Object.defineProperties, defineProperty = Object.defineProperty
   , nextTick = process.nextTick;
-
-var defNameResolve = function (dbFile, file) {
-	return replace.call(dbFile.__id__, '/', '-') + '.' +
-		normalize.call(dbFile.database.Filename.adapt(file.name));
-};
 
 var handleError = function (err) {
 	if (err.code !== 'UNSUPPORTED_FILE_TYPE') throw err;
