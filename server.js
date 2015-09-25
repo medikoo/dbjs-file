@@ -67,36 +67,30 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 		}.bind(this)));
 	}));
 
-	return function (data, res) {
-		var path, dbFile, filename;
-		if (!data.id || !data.file) {
-			if (!data.id) console.error("Upload error: No id");
-			if (!data.file) console.error("Upload error: Missing file");
-			res.statusCode = 400;
-			res.end("Invalid data");
-			return;
-		}
+	return {
+		validate: function (data) {
+			if (!data.id) throw new Error("Upload error: No id");
+			if (!data.file) throw new Error("Upload error: Missing file");
+			return data;
+		},
+		submit: function (data) {
+			var path, dbFile, filename;
 
-		dbFile = unserialize(data.id);
-		if (dbFile._kind_ === 'descriptor') dbFile = dbFile.object._get_(dbFile._sKey_);
-		filename = nameResolve(dbFile, data.file);
-		path = resolve(uploadPath, filename);
-		rename(data.file.path, path, renameOpts)(function () {
-			dbFile.path = filename;
-			if ((dbFile.name !== data.file.name) || (normalize.call(dbFile.name) !== dbFile.name)) {
-				dbFile.name = normalize.call(db.Filename.adapt(data.file.name));
-			}
-			if (dbFile.type !== data.file.type) dbFile.type = data.file.type;
-			dbFile.diskSize = data.file.size;
-			if (dbFile.constructor === db.Object) dbFile.once('turn', scheduleOnUpload.bind(dbFile));
-			else scheduleOnUpload.call(dbFile);
-		}).done(function () {
-			res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-			res.end('OK');
-		}, function (e) {
-			res.statusCode = 500;
-			res.end("Server error");
-			console.error(e.stack);
-		});
+			dbFile = unserialize(data.id);
+			if (dbFile._kind_ === 'descriptor') dbFile = dbFile.object._get_(dbFile._sKey_);
+			filename = nameResolve(dbFile, data.file);
+			path = resolve(uploadPath, filename);
+			rename(data.file.path, path, renameOpts)(function () {
+				dbFile.path = filename;
+				if ((dbFile.name !== data.file.name) || (normalize.call(dbFile.name) !== dbFile.name)) {
+					dbFile.name = normalize.call(db.Filename.adapt(data.file.name));
+				}
+				if (dbFile.type !== data.file.type) dbFile.type = data.file.type;
+				dbFile.diskSize = data.file.size;
+				if (dbFile.constructor === db.Object) dbFile.once('turn', scheduleOnUpload.bind(dbFile));
+				else scheduleOnUpload.call(dbFile);
+				return true;
+			});
+		}
 	};
 };
