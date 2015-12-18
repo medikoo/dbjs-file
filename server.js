@@ -80,7 +80,7 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 			if (dbFile._kind_ === 'descriptor') dbFile = dbFile.object._get_(dbFile._sKey_);
 			filename = nameResolve(dbFile, data.file);
 			path = resolve(uploadPath, filename);
-			rename(data.file.path, path, renameOpts)(function () {
+			return rename(data.file.path, path, renameOpts)(function () {
 				dbFile.path = filename;
 				if ((dbFile.name !== data.file.name) || (normalize.call(dbFile.name) !== dbFile.name)) {
 					dbFile.name = normalize.call(db.Filename.adapt(data.file.name));
