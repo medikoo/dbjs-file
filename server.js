@@ -12,6 +12,7 @@ var customError    = require('es5-ext/error/custom')
 
   , renameOpts = { intermediate: true }
   , defineProperties = Object.defineProperties, defineProperty = Object.defineProperty
+  , stringify = JSON.stringify
   , nextTick = process.nextTick;
 
 var handleError = function (err) {
@@ -74,10 +75,18 @@ module.exports = function (db, uploadPath/*, nameResolve*/) {
 			return data;
 		},
 		submit: function (data) {
-			var path, dbFile, filename;
+			var path, dbFile, filename, desc;
 
 			dbFile = unserialize(data.id);
-			if (dbFile._kind_ === 'descriptor') dbFile = dbFile.object._get_(dbFile._sKey_);
+			if (dbFile._kind_ === 'descriptor') {
+				desc = dbFile;
+				dbFile = dbFile.object._get_(dbFile._sKey_);
+				if (!dbFile) {
+					throw new Error("File instance cannot be resolved out of " +
+						stringify(desc.__valueId__) +
+						". Ensure needed model is defined on database instance");
+				}
+			}
 			filename = nameResolve(dbFile, data.file);
 			path = resolve(uploadPath, filename);
 			return rename(data.file.path, path, renameOpts)(function () {
